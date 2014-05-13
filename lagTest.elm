@@ -23,6 +23,17 @@ p2Control = discrete (delayed p1Control)
 player2 = player blue p2Control
 --
 
-render (w, h) p1 p2 = collage w h [p1, p2]
+-- Calculate Crror
+errDist sig1 sig2 =
+  let
+    diff (x1, y1) (x2, y2) = sqrt ((x1 - x2)^2 + (y1 - y2)^2)
+  in diff <~ sig1 ~ sig2
+netErr = round <~ errDist p1Control p2Control
 
-main = render <~ Window.dimensions ~ player1 ~ player2
+--- Render Scene
+render (w, h) p1 p2 dd = collage w h
+  [ p1
+  , p2
+  , toForm <| asText dd ]
+
+main = render <~ Window.dimensions ~ player1 ~ player2 ~ netErr
